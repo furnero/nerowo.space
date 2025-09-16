@@ -64,7 +64,7 @@ const links = [
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         border: 1px solid rgba(255, 255, 255, 0.1);
         width: 100%;
-        min-width: 450px;
+        min-width: 350px;
         max-width: 650px; 
         border-radius: 12px;
         box-sizing: border-box;
@@ -75,7 +75,7 @@ const links = [
     .profile-name{margin-top:15px;margin-bottom:5px;font-size:2em}
     .profile-bio{margin-top:0;margin-bottom:30px;font-size:1.1em;color:#bdc3c7}
     .links{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
-    .link-button{box-sizing:border-box;display:flex;align-items:center;text-align:left;width:100%;padding:12px 20px;font-size:1em;background-color:#262a2f;border:1px solid #1a1d22;color:#a7a7a7;text-decoration:none;border-radius:10px;font-weight:700;box-shadow:inset 2px 2px 5px rgba(0,0,0,.4),inset -2px -2px 5px rgba(255,255,255,.05);transition:transform .2s ease,background-color .2s ease,border-color .2s ease; cursor: pointer;}
+    .link-button{box-sizing:border-box;display:flex;align-items:center;text-align:left;width:100%;min-width: 170px;padding:12px 20px;font-size:1em;background-color:#262a2f;border:1px solid #1a1d22;color:#a7a7a7;text-decoration:none;border-radius:10px;font-weight:700;box-shadow:inset 2px 2px 5px rgba(0,0,0,.4),inset -2px -2px 5px rgba(255,255,255,.05);transition:transform .2s ease,background-color .2s ease,border-color .2s ease; cursor: pointer;}
     .link-button i{margin-left:auto;font-size:1.1em;color:#eaf2f8;opacity:.8}
     .link-button:hover{background-color:#212529;color:#fff;border-color:rgba(93,173,226,.5);transform:scale(1.02)}
     .animated-text{background:linear-gradient(90deg,#f8a1d1,#a37eec,#00b8d4,#f8a1d1);background-size:200% auto;background-clip:text;-webkit-background-clip:text;color:transparent;animation:textGradientAnimation 4s linear infinite}
@@ -86,7 +86,6 @@ const links = [
     .discord-status-dot-avatar.dnd{background-color:#ed4245}
     .discord-status-dot-avatar.offline{background-color:#747f8d}
     
-    /* Hinzugefügte Animationsregeln */
     @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
     
     .profile-name,
@@ -107,5 +106,32 @@ const links = [
     .links > :nth-child(6) { animation-delay: 1.3s; }
     .links > :nth-child(7) { animation-delay: 1.4s; }
     .links > :nth-child(8) { animation-delay: 1.5s; }
+
+    /* === Mobile Optimierung === */
+    @media (max-width: 768px) {
+        .container {
+            /* Verringert die Breite und den seitlichen Abstand auf kleineren Bildschirmen */
+            max-width: 95%;
+            padding: 30px 20px 20px 20px;
+        }
+
+        .links {
+            /* Ändert das Layout auf eine einzige Spalte */
+            grid-template-columns: 1fr;
+        }
+
+        .profile-name {
+            font-size: 1.8em;
+        }
+
+        .profile-bio {
+            font-size: 1em;
+        }
+
+        .gradient-border {
+            width: 120px;
+            height: 120px;
+        }
+    }
 </style>
 
