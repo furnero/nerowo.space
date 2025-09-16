@@ -1,0 +1,93 @@
+---
+const links = [
+    { href: "https://x.com/NeroZhen", text: "Twitter / X", icon: "fa-brands fa-x-twitter" },
+    { href: "https://www.furaffinity.net/user/nerozhen", text: "FurAffinity", icon: "fa-solid fa-paw" },
+    { href: "https://t.me/thefoxstash", text: "Telegram Channel", icon: "fa-brands fa-telegram" },
+    { href: "https://barq.app/@bluenero", text: "BARQ!", icon: "fa-solid fa-dog" },
+    { href: "http://discordapp.com/users/683815400835645527", text: "Discord", icon: "fa-brands fa-discord" },
+    { href: "https://orionsky.de/", text: "Project OrionSky", icon: "fa-solid fa-globe" },
+];
+---
+<div class="container">
+    <div class="gradient-border">
+      <!-- WICHTIG: Alle Bilder müssen im `public` Ordner liegen -->
+      <img src="/img/avatar.gif" alt="Avatar" class="profile-picture" />
+      <span class="discord-status-dot-avatar"></span>
+    </div>
+
+    <h1 class="profile-name">
+      <span class="animated-text">Nerozhen</span>
+    </h1>
+    <p class="profile-bio">19y | German | Fox | Coder | Sysadmin</p>
+
+    <div class="links">
+        {links.map(link => (
+            <a href={link.href} target="_blank" class="link-button">
+                {link.text} <i class={link.icon}></i>
+            </a>
+        ))}
+        <!-- Buttons für Overlays können hier hinzugefügt werden -->
+        <button class="link-button">
+            Gallery <i class="fa-solid fa-images"></i>
+        </button>
+        <button class="link-button">
+            Friends <i class="fa fa-users"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+    // JavaScript für Discord Status
+    function fetchDiscordStatus() {
+        const discordStatusDot = document.querySelector(".discord-status-dot-avatar");
+        if (!discordStatusDot) return;
+        const discordId = "683815400835645527";
+        fetch(`https://api.lanyard.rest/v1/users/${discordId}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    const status = data.data.discord_status;
+                    discordStatusDot.className = 'discord-status-dot-avatar'; // reset classes
+                    discordStatusDot.classList.add(status);
+                }
+            })
+            .catch((error) => console.error("Error fetching Lanyard status:", error));
+    }
+    fetchDiscordStatus();
+    setInterval(fetchDiscordStatus, 30000);
+</script>
+
+<style>
+    /* Die meisten Stile aus deiner style.css hier rein kopieren,
+       z.B. .container, .gradient-border, .link-button, etc. */
+    .container {
+        position: relative;
+        padding: 40px 25px 25px 25px;
+        text-align: center;
+        background-color: rgba(44, 44, 46, 0.25);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%;
+        max-width: 450px;
+        border-radius: 12px;
+        box-sizing: border-box;
+    }
+    .gradient-border{width:150px;height:150px;position:relative;padding:5px;box-sizing:border-box;border-radius:50%;margin:0 auto 15px;background:linear-gradient(60deg,#d60270,#9b4f96,#0038a8,#d60270);background-size:300% 300%;animation:animated-border 4s ease-in-out infinite,fadeInUp .5s ease-out .2s forwards;opacity:0;transform:translateZ(0)}
+    @keyframes animated-border{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
+    .profile-picture{width:100%;height:100%;object-fit:cover;border-radius:50%;border:none}
+    .profile-name{margin-top:15px;margin-bottom:5px;font-size:2em}
+    .profile-bio{margin-top:0;margin-bottom:30px;font-size:1.1em;color:#bdc3c7}
+    .links{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+    .link-button{box-sizing:border-box;display:flex;align-items:center;text-align:left;width:100%;padding:12px 20px;font-size:1em;background-color:#262a2f;border:1px solid #1a1d22;color:#a7a7a7;text-decoration:none;border-radius:10px;font-weight:700;box-shadow:inset 2px 2px 5px rgba(0,0,0,.4),inset -2px -2px 5px rgba(255,255,255,.05);transition:transform .2s ease,background-color .2s ease,border-color .2s ease}
+    .link-button i{margin-left:auto;font-size:1.1em;color:#eaf2f8;opacity:.8}
+    .link-button:hover{background-color:#212529;color:#fff;border-color:rgba(93,173,226,.5);transform:scale(1.02)}
+    .animated-text{background:linear-gradient(90deg,#f8a1d1,#a37eec,#00b8d4,#f8a1d1);background-size:200% auto;background-clip:text;-webkit-background-clip:text;color:transparent;animation:textGradientAnimation 4s linear infinite}
+    @keyframes textGradientAnimation{from{background-position:0% center}to{background-position:-200% center}}
+    .discord-status-dot-avatar{position:absolute;right:5px;bottom:5px;width:20px;height:20px;border-radius:50%;border:3px solid #2c2c2e;background-color:#747f8d;z-index:10}
+    .discord-status-dot-avatar.online{background-color:#3ba55d}
+    .discord-status-dot-avatar.idle{background-color:#faa61a}
+    .discord-status-dot-avatar.dnd{background-color:#ed4245}
+    .discord-status-dot-avatar.offline{background-color:#747f8d}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+</style>
