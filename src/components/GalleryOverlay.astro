@@ -1,62 +1,191 @@
 ---
-// Hier definieren wir alle Bilder für die Galerie an einem zentralen Ort.
-// Um Bilder hinzuzufügen oder zu entfernen, musst du nur diese Liste bearbeiten!
 const galleryImages = [
-  { src: "/img/gallery/comm-stickers.png", alt: "Stickers Commission", spoiler: false },
-  { src: "/img/gallery/comm-prideych.png", alt: "Pride YCH", spoiler: false },
-  { src: "/img/gallery/comm-feveicon.png", alt: "Feve Icon", spoiler: false },
-  { src: "/img/gallery/comm-pwyw.png", alt: "PWYW Commission", spoiler: false },
-  { src: "/img/avatar.gif", alt: "Avatar GIF", spoiler: false },
-  { src: "/img/gallery/comm-icecream.png", alt: "Ice Cream Commission", spoiler: false },
-  { src: "/img/gallery/comm-nero-refsheet.png", alt: "Nero Refsheet", spoiler: false },
-  { src: "/img/gallery/comm-ef-badge.png", alt: "Eurofurence Badge", spoiler: false },
-  { src: "/img/gallery/comm-ych-nsfw1.png", alt: "NSFW Bild 1", spoiler: true },
-  { src: "/img/gallery/comm-ych-nsfw2.png", alt: "NSFW Bild 2", spoiler: true },
+  { src: '/img/gallery/comm-stickers.png', alt: 'Stickers Commission' },
+  { src: '/img/gallery/comm-prideych.png', alt: 'Pride YCH' },
+  { src: '/img/gallery/comm-feveicon.png', alt: 'Feve Icon' },
+  { src: '/img/gallery/comm-pwyw.png', alt: 'Pay What You Want Commission' },
+  { src: '/img/avatar.gif', alt: 'Avatar GIF' },
+  { src: '/img/gallery/comm-icecream.png', alt: 'Ice Cream Commission' },
+  { src: '/img/gallery/comm-nero-refsheet.png', alt: 'Nero Refsheet' },
+  { src: '/img/gallery/comm-ef-badge.png', alt: 'Eurofurence Badge' },
+  { src: '/img/gallery/comm-ych-nsfw1.png', alt: 'NSFW YCH 1', spoiler: true },
+  { src: '/img/gallery/comm-ych-nsfw2.png', alt: 'NSFW YCH 2', spoiler: true },
 ];
 ---
 
-<!-- Das ist das Overlay, das erscheint, wenn man auf den Galerie-Button klickt -->
 <div id="gallery-overlay" class="overlay">
   <div class="modal">
-    <span class="close-button" title="Schließen">&times;</span>
+    <span class="close-button">&times;</span>
     <h2>Gallery</h2>
     <div class="gallery-grid">
-      <!-- Astro erstellt für jedes Bild in unserer Liste automatisch ein Galerie-Element -->
       {galleryImages.map(image => (
-        <div class="gallery-item" data-spoiler={image.spoiler}>
+        <div class="gallery-item" data-spoiler={image.spoiler ? 'true' : 'false'}>
           {image.spoiler && <div class="spoiler-text">18+</div>}
-          <img src={image.src} alt={image.alt} loading="lazy" />
+          <img src={image.src} alt={image.alt} />
         </div>
       ))}
     </div>
   </div>
 </div>
 
-<!-- Das ist die Lightbox, die ein einzelnes Bild groß anzeigt -->
+<!-- Lightbox für die vergrößerten Bilder -->
 <div id="image-lightbox" class="lightbox-overlay">
-  <span class="lightbox-close" title="Schließen">&times;</span>
-  <img class="lightbox-content" id="lightbox-img" alt="Großansicht"/>
+  <span class="lightbox-close">&times;</span>
+  <img class="lightbox-content" id="lightbox-img" />
 </div>
 
+<script>
+  function setupGallery() {
+    const galleryOverlay = document.getElementById('gallery-overlay');
+    const lightbox = document.getElementById('image-lightbox');
+
+    if (!galleryOverlay || !lightbox) return;
+
+    const galleryGrid = galleryOverlay.querySelector('.gallery-grid');
+    const lightboxImg = lightbox.querySelector('.lightbox-content');
+    const closeLightboxButton = lightbox.querySelector('.lightbox-close');
+
+    function openLightbox(imageElement) {
+      if (imageElement) {
+        lightboxImg.src = imageElement.src;
+        lightbox.classList.add('active');
+      }
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+    }
+
+    if (closeLightboxButton) {
+      closeLightboxButton.addEventListener('click', closeLightbox);
+    }
+    
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    if (galleryGrid) {
+        galleryGrid.addEventListener('click', (event) => {
+        const item = event.target.closest('.gallery-item');
+        if (!item) return;
+
+        const imageElement = item.querySelector('img');
+        const isSpoiler = item.dataset.spoiler === 'true';
+        const isRevealed = item.classList.contains('revealed');
+
+        if (isSpoiler && !isRevealed) {
+          item.classList.add('revealed');
+        } else {
+          openLightbox(imageElement);
+        }
+      });
+    }
+  }
+
+  // Warte, bis die Seite komplett geladen ist, um das Skript auszuführen
+  document.addEventListener('DOMContentLoaded', setupGallery);
+  // Führe es auch aus, wenn das Overlay sichtbar wird (Sicherheitsnetz)
+  const observer = new MutationObserver((mutations) => {
+    for (let mutation of mutations) {
+      if (mutation.attributeName === 'class' && mutation.target.classList.contains('active')) {
+        setupGallery();
+      }
+    }
+  });
+  const galleryOverlay = document.getElementById('gallery-overlay');
+  if(galleryOverlay) {
+    observer.observe(galleryOverlay, { attributes: true });
+  }
+
+</script>
+
 <style>
-  /* Alle relevanten Stile aus deiner alten CSS-Datei für die Galerie */
-  .overlay{position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,.8);display:flex;justify-content:center;align-items:center;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease;z-index:1000}
-  .overlay.active{opacity:1;visibility:visible}
-  .modal{background-color:#2c2c2e;padding:30px;border-radius:15px;max-width:800px;width:90%;max-height:80vh;overflow-y:auto;position:relative;box-shadow:0 5px 25px rgba(0,0,0,.5);transform:scale(.9);transition:transform .3s ease}
-  .overlay.active .modal{transform:scale(1)}
-  .modal .close-button{position:absolute;top:10px;right:20px;font-size:2.5em;color:#fff;line-height:1; cursor: pointer;}
-  .modal h2{text-align:center;margin-top:0;font-size:2em}
-  .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;margin-top:20px}
-  .gallery-item{border-radius:10px;overflow:hidden;background-color:#1c1c1e; cursor: pointer; position: relative;}
-  .gallery-item img{width:100%;height:100%;aspect-ratio: 1 / 1; object-fit:cover;display:block;transition:transform .3s ease}
-  .gallery-item:hover img{transform:scale(1.05)}
-  .gallery-item[data-spoiler="true"] img{filter:blur(20px);transform:scale(1.1);transition:filter .4s ease,transform .4s ease}
-  .gallery-item[data-spoiler="true"].revealed img{filter:blur(0);transform:scale(1)}
-  .spoiler-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;color:#fff;font-weight:700;font-size:1.2em;text-shadow:0 0 10px rgba(0,0,0,.8);pointer-events:none;transition:opacity .4s ease}
-  .gallery-item[data-spoiler="true"].revealed .spoiler-text{opacity:0}
-  .lightbox-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;z-index:2000}
-  .lightbox-overlay.active{display:flex}
-  .lightbox-content{max-width:90%;max-height:85%;object-fit:contain}
-  .lightbox-close{position:absolute;top:20px;right:35px;font-size:40px;color:#fff;transition:color .3s ease; cursor: pointer;}
-  .lightbox-close:hover{color:#bbb}
+  .overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 1000;
+  }
+  .overlay.active { opacity: 1; visibility: visible; }
+  .modal {
+    background-color: #2c2c2e; padding: 30px; border-radius: 15px;
+    max-width: 1200px; width: 90%; max-height: 80vh;
+    overflow-y: auto; position: relative;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+    transform: scale(0.9); transition: transform 0.3s ease;
+  }
+  .overlay.active .modal { transform: scale(1); }
+  .modal .close-button {
+    position: absolute; top: 10px; right: 20px;
+    font-size: 2.5em; color: #fff; line-height: 1;
+    cursor: pointer;
+  }
+  .modal h2 { text-align: center; margin-top: 0; font-size: 2em; }
+  
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+  }
+  .gallery-item {
+    border-radius: 10px; overflow: hidden;
+    background-color: #1c1c1e;
+    cursor: pointer;
+    position: relative;
+  }
+  .gallery-item img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block; transition: transform 0.3s ease;
+  }
+  .gallery-item:hover img { transform: scale(1.05); }
+
+  /* Spoiler-Stile */
+  .gallery-item[data-spoiler="true"] img {
+    filter: blur(20px);
+    transform: scale(1.1);
+    transition: filter 0.4s ease, transform 0.4s ease;
+  }
+  .gallery-item[data-spoiler="true"].revealed img {
+    filter: blur(0);
+    transform: scale(1);
+  }
+  .spoiler-text {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2; color: white;
+    font-weight: bold; font-size: 1.2em;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    pointer-events: none; transition: opacity 0.4s ease;
+  }
+  .gallery-item[data-spoiler="true"].revealed .spoiler-text {
+    opacity: 0;
+  }
+
+  /* Lightbox-Stile */
+  .lightbox-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: none; justify-content: center; align-items: center;
+    z-index: 2000;
+    opacity: 0; transition: opacity 0.3s ease;
+  }
+  .lightbox-overlay.active {
+    display: flex;
+    opacity: 1;
+  }
+  .lightbox-content {
+    margin: auto; display: block;
+    max-width: 85%; max-height: 85%;
+  }
+  .lightbox-close {
+    position: absolute; top: 15px; right: 35px;
+    color: #f1f1f1; font-size: 40px; font-weight: bold;
+    transition: 0.3s; cursor: pointer;
+  }
+  .lightbox-close:hover { color: #bbb; }
 </style>
+

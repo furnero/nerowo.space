@@ -3,98 +3,59 @@ import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import SpotifyNowPlaying from '../components/SpotifyNowPlaying.astro';
 import GalleryOverlay from '../components/GalleryOverlay.astro';
-import FriendsOverlay from '../components/FriendsOverlay.astro'; // <-- Importieren
+import FriendsOverlay from '../components/FriendsOverlay.astro';
+import CommentsOverlay from '../components/CommentsOverlay.astro';
 ---
 
-<Layout title="Nerozhen | Portfolio">
-  <div class="main-grid">
+<Layout title="Nero's Portfolio 🐾">
+  <main class="main-grid">
     <div class="status-widgets">
       <SpotifyNowPlaying />
     </div>
     <Card />
-  </div>
-  
+  </main>
+
   <GalleryOverlay />
-  <FriendsOverlay /> <!-- <-- Hier einfügen -->
+  <FriendsOverlay />
+  <CommentsOverlay />
 </Layout>
 
 <script>
-  function setupOverlay(buttonId, overlayId) {
-    // ... (Diese Funktion bleibt unverändert)
-    const openButton = document.getElementById(buttonId);
-    const overlay = document.getElementById(overlayId);
+  document.addEventListener('DOMContentLoaded', () => {
+    const handleOverlay = (buttonId, overlayId) => {
+      const button = document.querySelector(`[data-overlay-button="${buttonId}"]`);
+      const overlay = document.getElementById(overlayId);
+      const closeButton = overlay?.querySelector('.close-button');
 
-    if (openButton && overlay) {
-      const closeButton = overlay.querySelector(".close-button");
-      const openFunc = () => overlay.classList.add("active");
-      const closeFunc = () => overlay.classList.remove("active");
+      if (!button || !overlay || !closeButton) return;
 
-      openButton.addEventListener("click", openFunc);
-      if (closeButton) closeButton.addEventListener("click", closeFunc);
-      
-      overlay.addEventListener("click", (event) => {
-        if (event.target === overlay) closeFunc();
-      });
-    }
-  }
-
-  function setupGallery() {
-    // ... (Diese Funktion bleibt unverändert)
-    const galleryGrid = document.querySelector("#gallery-overlay .gallery-grid");
-    const lightbox = document.getElementById("image-lightbox");
-
-    if (!galleryGrid || !lightbox) return;
-
-    const lightboxImg = lightbox.querySelector(".lightbox-content");
-    const closeLightboxButton = lightbox.querySelector(".lightbox-close");
-
-    const openLightbox = (imageElement) => {
-      if (imageElement) {
-        lightboxImg.src = imageElement.src;
-        lightbox.classList.add("active");
-      }
-    }
-    
-    const closeLightbox = () => lightbox.classList.remove("active");
-    
-    if (closeLightboxButton) closeLightboxButton.addEventListener("click", closeLightbox);
-    lightbox.addEventListener("click", (e) => {
-        if (e.target === lightbox) closeLightbox();
-    });
-
-    galleryGrid.addEventListener("click", (event) => {
-        const item = event.target.closest(".gallery-item");
-        if (!item) return;
-
-        const imageElement = item.querySelector("img");
-        const isSpoiler = item.dataset.spoiler === "true";
-        const isRevealed = item.classList.contains("revealed");
-
-        if (isSpoiler && !isRevealed) {
-            item.classList.add("revealed");
-        } else {
-            openLightbox(imageElement);
+      button.addEventListener('click', () => overlay.classList.add('active'));
+      closeButton.addEventListener('click', () => overlay.classList.remove('active'));
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+          overlay.classList.remove('active');
         }
-    });
-  }
+      });
+    };
 
-  document.addEventListener("DOMContentLoaded", () => {
-    setupOverlay("open-gallery-modal", "gallery-overlay");
-    setupOverlay("open-friends-modal", "friends-overlay"); // <-- Zeile hinzufügen
-    setupGallery();
+    handleOverlay('gallery-overlay', 'gallery-overlay');
+    handleOverlay('friends-overlay', 'friends-overlay');
+    handleOverlay('comments-overlay', 'comments-overlay');
   });
 </script>
 
-<style>
+<style is:global>
   .main-grid {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 30px;
+    padding: 20px;
   }
   .status-widgets {
-      width: 100%;
-      max-width: 450px;
+    width: 100%;
+    max-width: 650px;
+    box-sizing: border-box;
   }
 </style>
 

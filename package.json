@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "astro": "^5.13.7",
+    "firebase": "^12.2.1",
     "node": "^24.8.0"
   }
 }
