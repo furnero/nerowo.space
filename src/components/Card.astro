@@ -2,15 +2,14 @@
 const links = [
     { href: "https://x.com/NeroZhen", text: "Twitter / X", icon: "fa-brands fa-x-twitter" },
     { href: "https://www.furaffinity.net/user/nerozhen", text: "FurAffinity", icon: "fa-solid fa-paw" },
-    { href: "https://t.me/thefoxstash", text: "Telegram Channel", icon: "fa-brands fa-telegram" },
+    { href: "https://t.me/nerozhen", text: "Telegram", icon: "fa-brands fa-telegram" },
     { href: "https://barq.app/@bluenero", text: "BARQ!", icon: "fa-solid fa-dog" },
     { href: "http://discordapp.com/users/683815400835645527", text: "Discord", icon: "fa-brands fa-discord" },
-    { href: "https://orionsky.de/", text: "Project OrionSky", icon: "fa-solid fa-globe" },
+    { href: "https://orionsky.de/", text: "OrionSky", icon: "fa-solid fa-globe" },
 ];
 ---
 <div class="container">
     <div class="gradient-border">
-      <!-- WICHTIG: Alle Bilder müssen im `public` Ordner liegen -->
       <img src="/img/avatar.gif" alt="Avatar" class="profile-picture" />
       <span class="discord-status-dot-avatar"></span>
     </div>
@@ -26,18 +25,16 @@ const links = [
                 {link.text} <i class={link.icon}></i>
             </a>
         ))}
-        <!-- Buttons für Overlays können hier hinzugefügt werden -->
-        <button class="link-button">
+        <button id="open-gallery-modal" class="link-button">
             Gallery <i class="fa-solid fa-images"></i>
         </button>
-        <button class="link-button">
+        <button id="open-friends-modal" class="link-button">
             Friends <i class="fa fa-users"></i>
         </button>
     </div>
 </div>
 
 <script>
-    // JavaScript für Discord Status
     function fetchDiscordStatus() {
         const discordStatusDot = document.querySelector(".discord-status-dot-avatar");
         if (!discordStatusDot) return;
@@ -47,7 +44,7 @@ const links = [
             .then((data) => {
                 if (data.success) {
                     const status = data.data.discord_status;
-                    discordStatusDot.className = 'discord-status-dot-avatar'; // reset classes
+                    discordStatusDot.className = 'discord-status-dot-avatar';
                     discordStatusDot.classList.add(status);
                 }
             })
@@ -58,18 +55,17 @@ const links = [
 </script>
 
 <style>
-    /* Die meisten Stile aus deiner style.css hier rein kopieren,
-       z.B. .container, .gradient-border, .link-button, etc. */
     .container {
         position: relative;
-        padding: 40px 25px 25px 25px;
+        padding: 40px 40px 25px 40px;
         text-align: center;
         background-color: rgba(44, 44, 46, 0.25);
         backdrop-filter: blur(10px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         border: 1px solid rgba(255, 255, 255, 0.1);
         width: 100%;
-        max-width: 450px;
+        min-width: 450px;
+        max-width: 650px; 
         border-radius: 12px;
         box-sizing: border-box;
     }
@@ -79,7 +75,7 @@ const links = [
     .profile-name{margin-top:15px;margin-bottom:5px;font-size:2em}
     .profile-bio{margin-top:0;margin-bottom:30px;font-size:1.1em;color:#bdc3c7}
     .links{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
-    .link-button{box-sizing:border-box;display:flex;align-items:center;text-align:left;width:100%;padding:12px 20px;font-size:1em;background-color:#262a2f;border:1px solid #1a1d22;color:#a7a7a7;text-decoration:none;border-radius:10px;font-weight:700;box-shadow:inset 2px 2px 5px rgba(0,0,0,.4),inset -2px -2px 5px rgba(255,255,255,.05);transition:transform .2s ease,background-color .2s ease,border-color .2s ease}
+    .link-button{box-sizing:border-box;display:flex;align-items:center;text-align:left;width:100%;padding:12px 20px;font-size:1em;background-color:#262a2f;border:1px solid #1a1d22;color:#a7a7a7;text-decoration:none;border-radius:10px;font-weight:700;box-shadow:inset 2px 2px 5px rgba(0,0,0,.4),inset -2px -2px 5px rgba(255,255,255,.05);transition:transform .2s ease,background-color .2s ease,border-color .2s ease; cursor: pointer;}
     .link-button i{margin-left:auto;font-size:1.1em;color:#eaf2f8;opacity:.8}
     .link-button:hover{background-color:#212529;color:#fff;border-color:rgba(93,173,226,.5);transform:scale(1.02)}
     .animated-text{background:linear-gradient(90deg,#f8a1d1,#a37eec,#00b8d4,#f8a1d1);background-size:200% auto;background-clip:text;-webkit-background-clip:text;color:transparent;animation:textGradientAnimation 4s linear infinite}
@@ -89,5 +85,27 @@ const links = [
     .discord-status-dot-avatar.idle{background-color:#faa61a}
     .discord-status-dot-avatar.dnd{background-color:#ed4245}
     .discord-status-dot-avatar.offline{background-color:#747f8d}
+    
+    /* Hinzugefügte Animationsregeln */
     @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    
+    .profile-name,
+    .profile-bio,
+    .link-button {
+        opacity: 0;
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+
+    .profile-name { animation-delay: 0.4s; }
+    .profile-bio { animation-delay: 0.6s; }
+    
+    .links > :nth-child(1) { animation-delay: 0.8s; }
+    .links > :nth-child(2) { animation-delay: 0.9s; }
+    .links > :nth-child(3) { animation-delay: 1.0s; }
+    .links > :nth-child(4) { animation-delay: 1.1s; }
+    .links > :nth-child(5) { animation-delay: 1.2s; }
+    .links > :nth-child(6) { animation-delay: 1.3s; }
+    .links > :nth-child(7) { animation-delay: 1.4s; }
+    .links > :nth-child(8) { animation-delay: 1.5s; }
 </style>
+

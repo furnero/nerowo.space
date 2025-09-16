@@ -1,42 +1,133 @@
 ---
+// Diese Komponente enthält die komplette Logik für das Spotify-Widget.
 ---
 <div id="now-playing-container" class="widget-card hidden">
-    <img id="album-art" src="" alt="Album Art" />
-    <div id="now-playing-info">
-      <p class="now-playing-label">Now playing...</p>
-      <p id="song-name"></p>
-      <p id="artist-name"></p>
-    </div>
-    <a id="listen-along-link" href="#" target="_blank">
-      <i class="fa-brands fa-spotify"></i>
-    </a>
+  <img id="album-art" src="" alt="Album Art" />
+  <div id="now-playing-info">
+    <p class="now-playing-label">Now playing...</p>
+    <p id="song-name"></p>
+    <p id="artist-name"></p>
+  </div>
+  <a id="listen-along-link" href="#" target="_blank" title="Auf Spotify anhören">
+    <i class="fa-brands fa-spotify"></i>
+  </a>
 </div>
 
 <script>
-    function updateNowPlaying() {
-        // Da wir keine Server-Logik haben, simulieren wir die Funktion.
-        // In einem echten Szenario würdest du hier eine API aufrufen.
-        // Für dieses Beispiel machen wir nichts, damit es nicht zu Fehlern kommt.
-        // Die Logik aus deinem script.js für den fetch zu '/now_playing' 
-        // würde eine Serverless-Function benötigen, was wir später hinzufügen können.
-        console.log("Fetching Spotify data...");
-    }
-    document.addEventListener("DOMContentLoaded", function () {
-        // updateNowPlaying(); // Deaktiviert, um Fehler zu vermeiden
-        // setInterval(updateNowPlaying, 15000);
-    });
+  function updateNowPlaying() {
+    const discordId = "683815400835645527"; // Deine Discord ID
+    const container = document.getElementById("now-playing-container");
+
+    // Wenn der Container nicht auf der Seite ist, brechen wir ab.
+    if (!container) return;
+
+    fetch(`https://api.lanyard.rest/v1/users/${discordId}`)
+      .then(response => response.json())
+      .then(data => {
+        // Prüfen, ob die Anfrage erfolgreich war und ob Spotify-Daten vorhanden sind.
+        if (!data.success || !data.data.spotify) {
+          container.classList.add("hidden");
+          return;
+        }
+        
+        const spotifyData = data.data.spotify;
+        
+        // Die HTML-Elemente mit den Song-Daten aktualisieren.
+        container.querySelector("#album-art").src = spotifyData.album_art_url;
+        container.querySelector("#song-name").textContent = spotifyData.song;
+        container.querySelector("#artist-name").textContent = spotifyData.artist;
+        container.querySelector("#listen-along-link").href = `https://open.spotify.com/track/${spotifyData.track_id}`;
+
+        // Den Container sichtbar machen.
+        container.classList.remove("hidden");
+      })
+      .catch(error => {
+        console.error("Fehler beim Abrufen der Lanyard-Daten für Spotify:", error);
+        container.classList.add("hidden"); // Bei Fehlern ebenfalls ausblenden.
+      });
+  }
+
+  // Führe die Funktion aus, sobald die Seite geladen ist, und dann alle 15 Sekunden.
+  document.addEventListener("DOMContentLoaded", () => {
+    updateNowPlaying();
+    setInterval(updateNowPlaying, 15000);
+  });
 </script>
 
 <style>
-    /* Stile für Spotify Widget aus deiner style.css */
-    .widget-card{width:100%;max-width:450px;box-sizing:border-box;border-radius:12px;padding:10px;box-shadow:0 8px 25px rgba(0,0,0,.3)}
-    #now-playing-container{background-color:rgba(29,185,84,.95);border:1px solid rgba(255,255,255,.3);padding:12px 20px;display:flex;align-items:center;gap:12px}
-    #now-playing-container.hidden{display:none!important}
-    #now-playing-container #album-art{width:50px;height:50px;border-radius:4px;object-fit:cover;flex-shrink:0}
-    #now-playing-container #now-playing-info{flex-grow:1;overflow:hidden;text-align:left;min-width:0}
-    #now-playing-container #song-name{color:#fff;font-weight:700;font-size:1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
-    #now-playing-container #artist-name{color:rgba(255,255,255,.85);font-size:.85em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:4px 0 0}
-    #now-playing-container #listen-along-link{color:#fff;font-size:1.6em;transition:transform .2s ease}
-    #now-playing-container #listen-along-link:hover{transform:scale(1.1)}
-    #now-playing-container .now-playing-label{margin:0 0 5px;font-size:.75em;font-weight:400;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.5px}
+  /* Alle relevanten Stile aus deiner alten CSS für das Widget */
+  .widget-card {
+    width: 100%;
+    max-width: 450px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  #now-playing-container {
+    background-color: rgba(29, 185, 84, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  #now-playing-container.hidden {
+    display: none !important;
+  }
+
+  #album-art {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  #now-playing-info {
+    flex-grow: 1;
+    overflow: hidden;
+    text-align: left;
+    min-width: 0;
+  }
+
+  #song-name {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+  }
+
+  #artist-name {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.85em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 4px 0 0 0;
+  }
+
+  #listen-along-link {
+    color: #ffffff;
+    font-size: 1.6em;
+    transition: transform 0.2s ease;
+  }
+
+  #listen-along-link:hover {
+    transform: scale(1.1);
+  }
+
+  .now-playing-label {
+    margin: 0 0 5px 0;
+    font-size: 0.75em;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.85);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 </style>
+
