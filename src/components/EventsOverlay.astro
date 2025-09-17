@@ -1,0 +1,120 @@
+---
+const upcomingEvents = [
+  { name: 'Eurofurence 30', date: '19. - 23.08.26', logo: '/img/events/ef30.png' },
+];
+
+const attendedEvents = [
+  'BSC 1',
+  'BFD 16',
+  'OpenBeatz 2025',
+];
+---
+<div id="events-overlay" class="overlay">
+  <div class="modal">
+    <span class="close-button">&times;</span>
+    <h2>Events & Conventions</h2>
+
+    <div class="events-container">
+      <div class="events-column">
+        <h3>Upcoming</h3>
+        <div class="events-list">
+          {upcomingEvents.map(event => (
+            <div class="event-card">
+              <img src={event.logo} alt={`${event.name} Logo`} />
+              <div class="event-info">
+                <h3>{event.name}</h3>
+                <p>{event.date}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="events-column">
+        <h3>Attended</h3>
+        <div class="attended-list">
+          {attendedEvents.map(event => (
+            <p>{event}</p>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 1000;
+  }
+  .overlay.active { opacity: 1; visibility: visible; }
+
+  .modal {
+    background-color: #212529; padding: 30px; border-radius: 15px;
+    max-width: 800px; width: 90%; max-height: 80vh;
+    overflow-y: auto; position: relative;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+    transform: scale(0.9); transition: transform 0.3s ease;
+  }
+  .overlay.active .modal { transform: scale(1); }
+  .modal .close-button {
+    position: absolute; top: 10px; right: 20px;
+    font-size: 2.5em; color: #fff; line-height: 1;
+    cursor: pointer;
+  }
+  .modal h2 { text-align: center; margin-top: 0; font-size: 2em; }
+  
+  .events-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin-top: 20px;
+  }
+
+  @media (min-width: 768px) {
+    .events-container {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .events-column h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #4a4a4c;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+  }
+
+  .event-card {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+  }
+  .event-card img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-right: 20px;
+    border-radius: 8px;
+  }
+  .event-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.2em;
+    border: none;
+  }
+  .event-info p {
+    margin: 0;
+    color: #a7a7a7;
+  }
+  
+  .attended-list p {
+    background-color: rgba(0, 0, 0, 0.15);
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin: 0 0 10px 0;
+  }
+</style>

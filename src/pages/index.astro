@@ -5,57 +5,48 @@ import SpotifyNowPlaying from '../components/SpotifyNowPlaying.astro';
 import GalleryOverlay from '../components/GalleryOverlay.astro';
 import FriendsOverlay from '../components/FriendsOverlay.astro';
 import CommentsOverlay from '../components/CommentsOverlay.astro';
+import EventsOverlay from '../components/EventsOverlay.astro';
+
+let isGalleryVisible = false;
+let isFriendsVisible = false;
+let isCommentsVisible = false;
+let isEventsVisible = false;
 ---
 
-<Layout title="Nero's Portfolio 🐾">
+<Layout title="Nerozhen's Portfolio">
   <main class="main-grid">
-    <div class="status-widgets">
-      <SpotifyNowPlaying />
-    </div>
+    <SpotifyNowPlaying client:load />
     <Card />
   </main>
-
-  <GalleryOverlay />
-  <FriendsOverlay />
-  <CommentsOverlay />
+  
+  <GalleryOverlay isVisible={isGalleryVisible} client:load />
+  <FriendsOverlay isVisible={isFriendsVisible} client:load />
+  <CommentsOverlay isVisible={isCommentsVisible} client:load />
+  <EventsOverlay isVisible={isEventsVisible} client:load />
 </Layout>
 
 <script>
+  function setupOverlay(buttonId, overlayId) {
+    const openButton = document.querySelector(`[data-overlay-button="${buttonId}"]`);
+    const overlay = document.getElementById(overlayId);
+    if (!openButton || !overlay) return;
+
+    const closeButton = overlay.querySelector(".close-button");
+    const openFunc = () => overlay.classList.add("active");
+    const closeFunc = () => overlay.classList.remove("active");
+
+    openButton.addEventListener("click", openFunc);
+    if (closeButton) closeButton.addEventListener("click", closeFunc);
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) closeFunc();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
-    const handleOverlay = (buttonId, overlayId) => {
-      const button = document.querySelector(`[data-overlay-button="${buttonId}"]`);
-      const overlay = document.getElementById(overlayId);
-      const closeButton = overlay?.querySelector('.close-button');
-
-      if (!button || !overlay || !closeButton) return;
-
-      button.addEventListener('click', () => overlay.classList.add('active'));
-      closeButton.addEventListener('click', () => overlay.classList.remove('active'));
-      overlay.addEventListener('click', (event) => {
-        if (event.target === overlay) {
-          overlay.classList.remove('active');
-        }
-      });
-    };
-
-    handleOverlay('gallery-overlay', 'gallery-overlay');
-    handleOverlay('friends-overlay', 'friends-overlay');
-    handleOverlay('comments-overlay', 'comments-overlay');
+    setupOverlay('gallery-overlay', 'gallery-overlay');
+    setupOverlay('friends-overlay', 'friends-overlay');
+    setupOverlay('comments-overlay', 'comments-overlay');
+    setupOverlay('events-overlay', 'events-overlay');
   });
 </script>
-
-<style is:global>
-  .main-grid {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
-    padding: 20px;
-  }
-  .status-widgets {
-    width: 100%;
-    max-width: 650px;
-    box-sizing: border-box;
-  }
-</style>
 
